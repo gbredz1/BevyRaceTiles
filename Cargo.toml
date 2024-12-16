@@ -1,0 +1,40 @@
+[package]
+name = "bevyracetile"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+bevy = "0.15"
+
+# tile
+tiled = "0.13"
+bevy_ecs_tilemap = "0.15"
+# bevy_ecs_tiled = { version = "0.4", features = ["rapier"] }
+bevy_ecs_tiled = { features = ["rapier"], git = "https://github.com/adrien-bon/bevy_ecs_tiled.git", branch = "dev" }
+
+# physics
+bevy_rapier2d = { version = "0.28" }
+
+# debug
+bevy-inspector-egui = {version = "0.28", optional = true }
+
+
+[features]
+default = []
+dev_mode = [
+    "bevy/bevy_dev_tools",
+    "dep:bevy-inspector-egui",
+    "bevy_ecs_tiled/debug",
+    "bevy_ecs_tiled/rapier_debug",
+    "bevy_rapier2d/debug-render-2d",
+]
+
+[profile.dev]
+default = ["dev_mode"]
+
+[profile.dev.package.bevy_rapier2d]
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
