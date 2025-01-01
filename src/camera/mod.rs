@@ -1,5 +1,7 @@
 pub(crate) mod ui;
 
+use bevy::core_pipeline::bloom::Bloom;
+use bevy::core_pipeline::tonemapping::Tonemapping;
 use bevy::prelude::*;
 
 use crate::entities::car::{car_driving, CarStates};
@@ -34,7 +36,19 @@ impl Plugin for CameraPlugin {
 pub(crate) struct GameCamera;
 
 fn setup(mut commands: Commands) {
-    commands.spawn((Camera2d::default(), GameCamera));
+    commands.spawn((
+        Camera2d,
+        Camera {
+            hdr: true,
+            ..default()
+        },
+        Tonemapping::None,
+        Bloom {
+            intensity: 0.01,
+            ..default()
+        },
+        GameCamera,
+    ));
 }
 
 fn camera_follow(
