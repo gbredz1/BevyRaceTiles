@@ -20,7 +20,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let font = asset_server.load("fonts/FiraSans-Bold.ttf");
     let text_font = TextFont {
         font: font.clone(),
-        font_size: 18.0,
+        font_size: 18.,
         ..default()
     };
 
@@ -29,10 +29,10 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             Node {
                 flex_direction: FlexDirection::Column,
                 position_type: PositionType::Absolute,
-                left: Val::Px(12.0),
-                bottom: Val::Px(10.0),
-                min_width: Val::Px(250.0),
-                padding: UiRect::axes(Val::Px(8.0), Val::Px(5.0)),
+                left: Val::Px(12.),
+                bottom: Val::Px(10.),
+                min_width: Val::Px(250.),
+                padding: UiRect::axes(Val::Px(8.), Val::Px(5.)),
                 ..default()
             },
             BackgroundColor(BLACK.with_alpha(0.3).into()),
@@ -97,10 +97,13 @@ fn update_road(
     mut text_query: Query<&mut TextSpan, With<RoadText>>,
     cars: Query<&CarStates, With<Player>>,
 ) {
+    let car: &CarStates = match cars.get_single() {
+        Ok(x) => x,
+        Err(_) => return,
+    };
+
     for mut text in &mut text_query {
-        if let Ok(car) = cars.get_single() {
-            **text = format!("{}", car.on_road);
-        }
+        **text = format!("{}", car.on_road);
     }
 }
 

@@ -142,23 +142,28 @@ pub(crate) fn car_driving(
     {
         let mut drift_factor = car.drift_factor;
 
-        // gaz operations
+        // Acceleration operations
+        // Apply acceleration force in the vehicle's direction
         velocity.linvel += controls.gaz
             * car.gaz_factor
             * transform.up().truncate()
             * time.delta_secs();
 
+        // Limit maximum vehicle speed
         velocity.linvel = velocity.linvel.clamp_length_max(car.max_speed);
 
-        // engine brake
+        // Engine brake
+        // If no acceleration command is active, apply engine braking
         if controls.gaz == 0.0 {
             damping.linear_damping = 0.5;
         } else {
             damping.linear_damping = 0.0;
         }
+        // Add additional damping based on the surface type
         damping.linear_damping += car.damping_add;
 
-        // brake forward and back
+        // Forward and backward braking
+        // Detect braking when input is opposite to a movement direction
         let brake = (controls.gaz < 0.0 && car.speed > 0.0)
             || (controls.gaz > 0.0 && car.speed < 0.0);
         if brake {
@@ -166,17 +171,20 @@ pub(crate) fn car_driving(
         }
         car.brake = true;
 
-        // hand brake
+        // Hand brake
+        // Increase damping and drift factor to simulate stronger braking
         if controls.hand_brake > 0.0 {
             damping.linear_damping = controls.hand_brake * 5.0;
             drift_factor = 0.99;
         }
 
-        //compute speed
+        // Calculate current vehicle speed
         car.speed = velocity.linvel.dot(transform.up().truncate());
 
-        // steering operations
+        // Steering operations
+        // Minimum speed factor to prevent rotation while stationary
         let min_speed_factor = if car.speed.abs() > 25.0 { 1.0 } else { 0.0 };
+        // Reverse factor for backward movement
         let reverse_factor = if car.speed > 0.0 { 1.0 } else { -1.0 };
         velocity.angvel = controls.steering
             * car.turn_factor
@@ -184,17 +192,20 @@ pub(crate) fn car_driving(
             * min_speed_factor
             * time.delta_secs();
 
-        //killorthogonalvelocity
+        // Lateral velocity calculation
+        // Decompose velocity into a forward/backward component
         let forward_velocity = transform.up().truncate()
             * velocity.linvel.dot(transform.up().truncate());
 
+        // Decompose velocity into lateral component
         let right_velocity = transform.right().truncate()
             * velocity.linvel.dot(transform.right().truncate());
 
-        //Kill the orthogonal velocity (side velocity) based on how much the car should drift.
+        // Adjust lateral velocity according to the desired drift factor
         velocity.linvel = forward_velocity + right_velocity * drift_factor;
 
-        // round to 0.01
+        // Round to 0.01
+        // If velocity is very low, consider it zero to prevent sliding
         if velocity.linvel.length() < 0.01 {
             velocity.linvel = Vec2::ZERO;
         }

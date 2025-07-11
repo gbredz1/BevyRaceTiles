@@ -15,11 +15,11 @@ impl Plugin for CheckpointPlugin {
 #[derive(Event, Debug)]
 pub(crate) struct CheckpointEvent {
     pub car: Entity,
-    pub checkpoint: u8,
+    pub checkpoint: usize,
 }
 
 #[derive(Component, Debug)]
-pub(crate) struct Checkpoint(pub u8);
+pub(crate) struct Checkpoint(pub usize);
 
 fn checkpoint(
     mut events: EventReader<CollisionEvent>,
@@ -39,11 +39,11 @@ fn checkpoint(
             };
 
             event_writer.send(CheckpointEvent {
-                car: car,
+                car,
                 checkpoint: checkpoint.0,
             });
 
-            info!("checkpoint event: {:?} x {:?}", car, checkpoint);
+            debug!("checkpoint event: {:?} x {:?}", car, checkpoint);
         }
     }
 }

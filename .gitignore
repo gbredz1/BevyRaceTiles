@@ -1,2 +1,8 @@
 /target
-.vscode
+.run/
+.idea/
+.vscode/
+.env
+
+flamegraph*
+perf.data*

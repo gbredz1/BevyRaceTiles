@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="left-up" width="50" height="40" tilewidth="128" tileheight="128" infinite="0" nextlayerid="17" nextobjectid="309">
+ <properties>
+  <property name="checkpoints" type="int" value="3"/>
+  <property name="laps" type="int" value="2"/>
+ </properties>
  <tileset firstgid="1" source="tilesheets/lands.tsx"/>
  <tileset firstgid="46" source="tilesheets/roads.tsx"/>
  <layer id="3" name="Grounds" width="50" height="40">

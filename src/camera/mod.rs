@@ -1,4 +1,5 @@
 pub(crate) mod ui;
+pub(crate) mod ui_laps;
 
 use bevy::core_pipeline::bloom::Bloom;
 use bevy::core_pipeline::tonemapping::Tonemapping;
@@ -15,7 +16,7 @@ pub(crate) struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(ui::UIPlugin);
+        app.add_plugins((ui::UIPlugin, ui_laps::UILapsPlugin));
 
         app.add_systems(Startup, setup)
             .insert_resource(ClearColor(BACKGROUND_COLOR));

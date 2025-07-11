@@ -156,7 +156,7 @@ fn get_properties(
     let mut properties = object_data.properties.clone();
     properties.extend(collider_source.layer(map).unwrap().properties.clone());
 
-    return Some(properties);
+    Some(properties)
 }
 
 fn get_car_color(
@@ -167,28 +167,28 @@ fn get_car_color(
         None | Some(_) => return None,
     };
 
-    return match color_name.as_str() {
+    match color_name.as_str() {
         "red" => Some(CarColor::Red),
         "yellow" => Some(CarColor::Yellow),
         "green" => Some(CarColor::Green),
         "blue" => Some(CarColor::Blue),
         "black" => Some(CarColor::Black),
         _ => None,
-    };
+    }
 }
 
 fn get_player(properties: &HashMap<String, PropertyValue>) -> Option<u8> {
-    return match properties.get("player") {
+    match properties.get("player") {
         Some(&PropertyValue::IntValue(i)) => Some(i as u8),
-        None | Some(_) => return None,
-    };
+        None | Some(_) => None,
+    }
 }
 
 fn get_checkpoint_value(
     properties: &HashMap<String, PropertyValue>,
-) -> Option<u8> {
-    return match properties.get("value") {
-        Some(&PropertyValue::IntValue(i)) => Some(i as u8),
-        None | Some(_) => return None,
-    };
+) -> Option<usize> {
+    match properties.get("value") {
+        Some(&PropertyValue::IntValue(i)) => Some(i as usize),
+        None | Some(_) => None,
+    }
 }

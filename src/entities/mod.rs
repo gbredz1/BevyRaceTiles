@@ -1,11 +1,13 @@
 pub(crate) mod car;
 pub(crate) mod car_brakelights;
+pub(crate) mod car_checkpoint;
 pub(crate) mod car_wheels;
 pub(crate) mod checkpoint;
 pub(crate) mod road;
 
 use bevy::prelude::*;
 
+use crate::entities::car_checkpoint::CarCheckpointPlugin;
 use car::CarPlugin;
 use car_brakelights::CarBrakeLightsPlugin;
 use checkpoint::CheckpointPlugin;
@@ -20,6 +22,7 @@ impl Plugin for EntitiesPlugin {
             RoadPlugin,
             CheckpointPlugin,
             CarBrakeLightsPlugin,
+            CarCheckpointPlugin,
         ));
     }
 }
