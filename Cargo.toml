@@ -27,8 +27,12 @@ dev_mode = [
     "bevy_rapier2d/debug-render-2d",
 ]
 
-[profile.dev.package.bevy_rapier2d]
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
 opt-level = 3
 
 [profile.release]
 codegen-units = 1
+lto = "thin"

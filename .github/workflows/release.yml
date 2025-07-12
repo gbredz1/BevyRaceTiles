@@ -1,11 +1,11 @@
-name: CI/CD
+name: Release
 
 on:
   push:
     branches: [ "github-actions" ]
   pull_request:
     branches: [ "github-actions" ]
-
+      
 env:
   CARGO_TERM_COLOR: always
 
@@ -35,74 +35,36 @@ jobs:
       name: ${{ steps.metadata.outputs.name }}
       version: ${{ steps.metadata.outputs.version}}
 
-  lint-and-test:
-    name: Run fmt linter and tests
-    runs-on: ubuntu-latest
-    steps:
-#      - uses: ./.github/actions/project-setup
-      - name: Install dependencies
-        if: runner.os != 'Windows'
-        run: |
-          sudo apt update
-          sudo apt install -y  mold clang pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0
-        shell: bash
-      - name: Add components
-        run: |
-          rustup component add clippy
-          rustup component add rustfmt
-      - name: Run fmt
-        run: |
-          cargo fmt --check
-      - name: Run clippy
-        env:
-          RUSTFLAGS: "-Dwarnings"
-        run: |
-          cargo clippy --locked --all-targets
-      - name: Run tests
-        run: |
-          cargo test --locked
-
-
   build:
     name: Build ${{ matrix.job.name }}
     runs-on: ${{ matrix.job.os }}
-#    needs: [metadata, lint-and-test]
     needs: metadata
     strategy:
       fail-fast: false
       matrix:
         job:
-          - name: linux-x86_64-gnu
-            os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-#          - name: macOS-x86_64
-#            os: macos-latest
-#            target: x86_64-apple-darwin
-#          - name: windows-x86_64-gnu
-#            os: ubuntu-latest
-#            target: x86_64-pc-windows-gnu
-          - name: windows-x86_64-msvc
-            os: windows-latest
-            target: x86_64-pc-windows-msvc
-
+         - name: linux-x86_64-gnu
+           os: ubuntu-22.04
+           target: x86_64-unknown-linux-gnu
+         - name: windows-x86_64-msvc
+           os: windows-latest
+           target: x86_64-pc-windows-msvc
+         - name: macOS-x86_64
+           os: macOS-latest
+           target: x86_64-apple-darwin
+         - name: macOS-aarch64
+           os: macOS-latest
+           target: aarch64-apple-darwin
     steps:
-#      - uses: ./.github/actions/project-setup
-      - name: Install dependencies
-        if: runner.os != 'Windows'
-        run: |
-          sudo apt update
-          sudo apt install -y  mold clang pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0
-        shell: bash
-      - name: Rustup add target
-        if: runner.os != 'Windows'
-        run: |
-          rustup target add ${{ matrix.job.target }}
-
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Cache cargo & target directories
         uses: Swatinem/rust-cache@v2
-
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update
+          sudo apt install -y mold clang pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0
       - name: Build project
         run: |
           cargo build --locked --release --target ${{ matrix.job.target }}
@@ -123,7 +85,7 @@ jobs:
           ASSET_PATH="assets"
 
           # package path
-          PKG_SUFFIX=$([[ "$CARGO_BUILD_TARGET" != *"-pc-windows-"* ]] && echo ".tar.gz" || echo ".zip")
+          PKG_SUFFIX=$([[ "${{ matrix.job.target }}" = *"-linux-"* ]] && echo ".tar.gz" || echo ".zip")
           PKG_BASENAME=${{ needs.metadata.outputs.name }}-${{ needs.metadata.outputs.version }}-${{ matrix.job.name }}
           PKG_NAME=${PKG_BASENAME}${PKG_SUFFIX}
 
@@ -145,11 +107,9 @@ jobs:
 
           echo "PKG_NAME=${PKG_NAME}" >> $GITHUB_OUTPUT
 
-
       - name: "Upload tarball artifact"
         if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: tarball-${{ steps.tarball.outputs.PKG_NAME }}
           path: ${{ steps.tarball.outputs.PKG_NAME }}
-
