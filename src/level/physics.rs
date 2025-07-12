@@ -49,11 +49,7 @@ impl TiledPhysicsBackend for MyCustomRapierPhysicsBackend {
         collider_source: &TiledColliderSource,
     ) -> Option<TiledColliderSpawnInfos> {
         let collider = self.0.spawn_collider(commands, map, collider_source);
-        let collider = match collider {
-            Some(c) => c,
-            None => return None,
-        };
-
+        let collider = collider?;
         let properties = get_properties(collider_source, map)?;
 
         match properties.get("group") {
@@ -112,7 +108,7 @@ impl TiledPhysicsBackend for MyCustomRapierPhysicsBackend {
                         ));
                     });
 
-                if let Some(_) = get_player(&properties) {
+                if get_player(&properties).is_some() {
                     commands.entity(collider.entity).insert(Player).insert(
                         Name::new("PlayerControlledObject (Rapier physics)"),
                     );

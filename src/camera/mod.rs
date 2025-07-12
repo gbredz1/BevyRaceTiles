@@ -68,6 +68,7 @@ fn camera_follow(
     camera.translation.y = player_transform.translation.y;
 }
 
+#[allow(clippy::type_complexity)]
 fn camera_scale(
     time: Res<Time>,
     states_query: Query<&CarStates, With<Player>>,
