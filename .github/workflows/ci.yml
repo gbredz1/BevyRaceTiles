@@ -17,6 +17,12 @@ jobs:
         uses: actions/checkout@v4
       - name: Cache cargo & target directories
         uses: Swatinem/rust-cache@v2
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y mold clang pkg-config \
+               libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 \
+               libwayland-dev libxkbcommon-dev
       - name: Build project
         run: cargo build --locked
       - name: Upload build artifacts
@@ -39,6 +45,7 @@ jobs:
       - name: Run fmt
         run: |
           cargo fmt --all -- --check
+
   test:
     name: Test
     runs-on: ubuntu-latest

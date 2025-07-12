@@ -65,6 +65,9 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y mold clang pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0
+      - name: Rustup add target
+        run: |
+          rustup target add ${{ matrix.job.target }}
       - name: Build project
         run: |
           cargo build --locked --release --target ${{ matrix.job.target }}
