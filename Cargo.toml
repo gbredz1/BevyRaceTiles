@@ -27,9 +27,6 @@ dev_mode = [
     "bevy_rapier2d/debug-render-2d",
 ]
 
-[profile.dev]
-default = ["dev_mode"]
-
 [profile.dev.package.bevy_rapier2d]
 opt-level = 3
 
