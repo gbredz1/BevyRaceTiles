@@ -28,10 +28,11 @@ dev_mode = [
 ]
 
 [profile.dev]
-default = ["dev_mode"]
+opt-level = 1
 
-[profile.dev.package.bevy_rapier2d]
+[profile.dev.package."*"]
 opt-level = 3
 
 [profile.release]
 codegen-units = 1
+lto = "thin"
